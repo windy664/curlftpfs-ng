@@ -247,7 +247,7 @@ static size_t read_data(void *ptr, size_t size, size_t nmemb, void *data) {
   do {\
     CURLcode res = curl_easy_setopt(handle, option, __VA_ARGS__);\
     if (res != CURLE_OK) {\
-      fprintf(stderr, "Error setting curl: %s\n", error_buf);\
+      fprintf(stderr, "Error setting curl option %s (code %d): %s\n", #option, (int)res, error_buf);\
       exit(1);\
     }\
   }while(0)
@@ -1631,7 +1631,7 @@ static void set_common_curl_stuff(CURL* easy) {
   }
 
   curl_easy_setopt_or_die(easy, CURLOPT_INTERFACE, ftpfs.interface);
-  curl_easy_setopt_or_die(easy, CURLOPT_KRB4LEVEL, ftpfs.krb4);
+  /* CURLOPT_KRB4LEVEL was removed from libcurl; krb4 support is long gone. */
   
   if (ftpfs.proxy) {
     curl_easy_setopt_or_die(easy, CURLOPT_PROXY, ftpfs.proxy);
