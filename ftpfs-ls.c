@@ -58,7 +58,11 @@ static int parse_dir_unix(const char *line,
                "%5s"  "%*c"
                "%1023c",
                mode, &nlink, user, group, &size, month, day, year, file);
-  if (res < 9) {
+  /* glibc scanf quirk: a trailing %c conversion that stops at end-of-string
+   * assigns but is not counted, so a fully parsed line yields one less.
+   * Accept res one short as long as a filename was actually read. */
+  if (res < 8 || file[0] == '\0') {
+    memset(file, 0, sizeof(char)*1024);
     res = sscanf(line,
                  "%11s"
                  "%32s" SPACES
@@ -69,7 +73,7 @@ static int parse_dir_unix(const char *line,
                  "%5s"  "%*c"
                  "%1023c",
                  mode, user, group, &size, month, day, year, file);
-    if (res < 8) {
+    if (res < 7 || file[0] == '\0') {
       return 0;
     }
   }
